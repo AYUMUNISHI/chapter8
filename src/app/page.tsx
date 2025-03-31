@@ -3,7 +3,8 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/_Constants";
-import {Posts,Post} from './_types/PostsType';
+import {Posts,Post,Categories} from './_types/PostsType';
+import { headers } from "next/headers";
 
 
 export default function Home(){
@@ -15,12 +16,19 @@ export default function Home(){
     const fetcher = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/posts`);
-        if (!response.ok) {
+        //fetchの後ろに管理画面から取得したエンドポイントを入力
+        const res = await fetch(`https://gr93pbkkbx.microcms.io/api/v1/posts`,{
+          //fetch関数の第二引数にheadersを設定でき、その中にAPIキーを設定します
+          headers: {
+            'X-MICROCMS-API-KEY' : process.env.NEXT_PUBLIC_MICRO_CMS_API_KEY as string,
+          }
+       });
+
+        if (!res.ok) {
           throw new Error('ネットワークエラー');
         }
-        const data = await response.json() as Posts; // 型を指定
-        setPosts(data.posts); // APIから取得したデータを使用
+        const data = await res.json() as Posts; // 型を指定
+        setPosts(data.contents); // APIから取得したデータを使用
       } catch (error) {
         console.error('データの取得に失敗しました:', error);
       } finally {
@@ -60,13 +68,13 @@ export default function Home(){
                     className="flex justify-between gap-2 text-category text-sm"
                   >
                     {
-                      post.categories.map((category:string) => {
+                      post.categories.map((category) => {
                         return (
                           <div
-                            key={category}
+                            key={category.name}
                             className="border border-category rounded px-1 py-0.5 "
                           >
-                            {category}
+                            {category.name}
                           </div>
                         )
                       })

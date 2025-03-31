@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation'; 
 import { API_BASE_URL } from '../../_Constants';
-import {ApiResponse, Post} from '../../_types/PostsType';
+import { Post } from '../../_types/PostsType';
 
 
 
@@ -21,10 +21,17 @@ const Show: React.FC = () => {
   useEffect(() =>{
     const fetcher = async () => {
       setLoading(true)
-      const ser =  await fetch(`${API_BASE_URL}/posts/${id}`)
-      const  postData = (await ser.json()) as ApiResponse ;
+        //fetchの後ろに管理画面から取得したエンドポイントを入力
+        const res = await fetch(`https://gr93pbkkbx.microcms.io/api/v1/posts/${id}`,{
+          //fetch関数の第二引数にheadersを設定でき、その中にAPIキーを設定します
+          headers: {
+            'X-MICROCMS-API-KEY' :process.env.NEXT_PUBLIC_MICRO_CMS_API_KEY as string,
+          }
+       });
+
+      const  postData = (await res.json()) as Post ;
       console.log(postData)
-      setPost(postData.post)
+      setPost(postData);
       setLoading(false)
     }
     fetcher()
@@ -45,7 +52,7 @@ const Show: React.FC = () => {
     >
       <div className="bg-slate-800">
       {post && (
-        <Image src={post.thumbnailUrl} alt="" className="object-cover h-full w-full" width={1000} height={280}/>
+        <Image src={post.thumbnail.url} alt="" className="object-cover h-full w-full" width={1000} height={280}/>
       )}
       </div>
       <div className="p-4">
@@ -64,10 +71,10 @@ const Show: React.FC = () => {
           post && post.categories.map((category) => {
             return (
             <div
-              key={category}
+              key={category.name}
               className="border border-category rounded px-1 py-0.5 mr-2"
             >
-              {category}
+              {category.name}
             </div>
             )
           })

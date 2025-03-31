@@ -1,17 +1,22 @@
 export type Post = {
-  id: number;
+  id: string;
   title: string;
-  thumbnailUrl: string;
-  categories: string[];
   content: string;
   createdAt: string;
+  thumbnail: {url: string; height: string; width: string};
+  categories: {id: string; name: string}[];
 }
 
+
 export type Posts = {
-  posts: Post[];
+  contents: Post[];
+  totalCount: number;
+  offset: number;
+  limit: number;
 };
 
-export type ApiResponse = {
-  message: string;
-  post: Post;
-};
+
+export type Categories ={
+  id: string
+  name: string
+}
