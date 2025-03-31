@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/_Constants";
-import {Posts,Post,Categories} from './_types/PostsType';
+import {Posts,Post } from './_types/PostsType';
 import { headers } from "next/headers";
 
 

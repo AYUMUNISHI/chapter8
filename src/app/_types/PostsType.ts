@@ -3,8 +3,8 @@ export type Post = {
   title: string;
   content: string;
   createdAt: string;
-  thumbnail: {url: string; height: string; width: string};
-  categories: {id: string; name: string}[];
+  thumbnail: thumbnail[];
+  categories: Category[];
 }
 
 
@@ -16,7 +16,13 @@ export type Posts = {
 };
 
 
-export type Categories ={
+export type Category = {
   id: string
   name: string
+}
+
+export type thumbnail = {
+  url: string;
+  height: string;
+  width: string
 }
