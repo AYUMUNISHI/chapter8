@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation'; 
 import { API_BASE_URL } from '../../_Constants';
-import {ApiResponse, Post} from '../../types/PostsType';
+import {ApiResponse, Post} from '../../_types/PostsType';
 
 
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/_Constants";
-import {Posts,Post} from './types/PostsType';
+import {Posts,Post} from './_types/PostsType';
 
 
 export default function Home(){
