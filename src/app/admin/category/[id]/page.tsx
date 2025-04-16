@@ -89,7 +89,7 @@ const CategoryEdit: React.FC = () => {
     if(!confirmDelete)return;
 
     try{
-      const response =await fetch(`/api/admin/category/${id}`,{
+      const response =await fetch(`/api/admin/categories/${id}`,{
         method: "DELETE",
       });
 

@@ -3,13 +3,13 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/_Constants";
-import {Posts,Post } from './_types/PostsType';
+import {ShowPost, Posts} from './_types/PostsType';
 import { headers } from "next/headers";
 
 
 export default function Home(){
 
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<ShowPost[]>([])
   const [loading, setLoading] =useState<boolean>(false)
 
   useEffect(() => {
@@ -17,18 +17,15 @@ export default function Home(){
       setLoading(true);
       try {
         //fetchの後ろに管理画面から取得したエンドポイントを入力
-        const res = await fetch(`https://gr93pbkkbx.microcms.io/api/v1/posts`,{
-          //fetch関数の第二引数にheadersを設定でき、その中にAPIキーを設定します
-          headers: {
-            'X-MICROCMS-API-KEY' : process.env.NEXT_PUBLIC_MICRO_CMS_API_KEY as string,
-          }
+        const res = await fetch(`/api/admin/posts`,{
+
        });
 
         if (!res.ok) {
           throw new Error('ネットワークエラー');
         }
         const data = await res.json() as Posts; // 型を指定
-        setPosts(data.contents); // APIから取得したデータを使用
+        setPosts(data.posts); // APIから取得したデータを使用
       } catch (error) {
         console.error('データの取得に失敗しました:', error);
       } finally {
@@ -68,13 +65,13 @@ export default function Home(){
                     className="flex justify-between gap-2 text-category text-sm"
                   >
                     {
-                      post.categories.map((category) => {
+                      post.postCategories?.map((pc) => {
                         return (
                           <div
-                            key={category.name}
+                            key={pc.category.name}
                             className="border border-category rounded px-1 py-0.5 "
                           >
-                            {category.name}
+                            {pc.category.name}
                           </div>
                         )
                       })

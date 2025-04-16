@@ -1,24 +1,27 @@
-export type Post = {
-  id: string;
+export type ShowPost = {
+  id: number;
   title: string;
   content: string;
+  thumbnailUrl: string;
   createdAt: string;
-  thumbnail: thumbnail[];
-  categories: Category[];
-}
-
-
-export type Posts = {
-  contents: Post[];
-  totalCount: number;
-  offset: number;
-  limit: number;
+  postCategories: {
+    category: {
+      id: number;
+      name: string;
+    }
+  }[];
 };
 
 
-export type Category = {
-  id: string
-  name: string
+export type ShowPostResponse = {
+  status: string;
+  post: ShowPost;
+}
+
+
+export type CategoryType ={
+  status: string;
+  categories:[];
 }
 
 export type thumbnail = {
