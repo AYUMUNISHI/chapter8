@@ -3,7 +3,7 @@ import { FormErrorsPostsType, FormErrorsCategoryType } from "@/app/_types/AdminT
 import React from "react";
 
 
-export const PostsValidate = (values: FormErrorsPostsType) => {
+export const postsValidate = (values: FormErrorsPostsType) => {
   const errors: FormErrorsPostsType = {};
 
   console.log("validate 結果:", errors); // ここ重要！！
@@ -13,17 +13,17 @@ export const PostsValidate = (values: FormErrorsPostsType) => {
   if (!values.content) {
     errors.content = "内容は必須です。";
   }
-  if (!values.thumbnail) {
-    errors.thumbnail = "サムネイル画像URLは必須です。";
+  if (!values.thumbnailUrl) {
+    errors.thumbnailUrl = "サムネイル画像URLは必須です。";
   } else if (
-    !/^https?:\/\/.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(values.thumbnail)
+    !/^https?:\/\/.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(values.thumbnailUrl)
   ) {
-    errors.thumbnail = "有効な画像URLを入力してください。(.jpg/.pngなど)";
+    errors.thumbnailUrl = "有効な画像URLを入力してください。(.jpg/.pngなど)";
   }
   return errors;
 }
 
-export const CategoryValidate = (value: FormErrorsCategoryType) => {
+export const categoryValidate = (value: FormErrorsCategoryType) => {
   const errors: FormErrorsCategoryType = {};
 
   console.log("validate 結果：", errors);

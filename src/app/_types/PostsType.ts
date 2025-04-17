@@ -1,4 +1,4 @@
-export type ShowPost = {
+export type showPost = {
   id: number;
   title: string;
   content: string;
@@ -13,13 +13,13 @@ export type ShowPost = {
 };
 
 
-export type ShowPostResponse = {
+export type showPostResponse = {
   status: string;
-  post: ShowPost;
+  post: showPost;
 }
 
 
-export type CategoryType ={
+export type categoryType ={
   status: string;
   categories:[];
 }

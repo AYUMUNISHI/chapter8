@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CategoryType, CreateCategoryRequestBody } from "@/app/_types/AdminType";
+import { categoryType, createCategoryRequestBody } from "@/app/_types/AdminType";
 
 
 
 export default function Category() {
 
-  const [posts, setPosts] = useState<CreateCategoryRequestBody[]>([]);
+  const [posts, setPosts] = useState<createCategoryRequestBody[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() =>{
@@ -27,7 +27,7 @@ export default function Category() {
 
         }
 
-        const data = await response.json() as CategoryType;
+        const data = await response.json() as categoryType;
         setPosts(data.categories);
       }catch(error){
         console.error("データ取得に失敗しました" , error);

@@ -1,5 +1,5 @@
 
-export type CreatePostRequestBody = {
+export type createPostRequestBody = {
 // 記事作成のリクエストボディの型 
   id:string;
   title: string;
@@ -9,7 +9,7 @@ export type CreatePostRequestBody = {
   thumbnailUrl: string;
 }
 
-export type CreateCategoryRequestBody = {
+export type createCategoryRequestBody = {
   id: string;
   name: string;
   createdAt: string;
@@ -20,7 +20,7 @@ export type Posts = {
   posts: [];
 }
 
-export type CategoryType ={
+export type categoryType ={
   status: string;
   categories:[];
 }
@@ -29,7 +29,7 @@ export type CategoryType ={
 export type FormErrorsPostsType = {
   title?: string;
   content?: string;
-  thumbnail?: string;
+  thumbnailUrl?: string;
 };
 
 export type FormErrorsCategoryType = {
@@ -37,8 +37,33 @@ export type FormErrorsCategoryType = {
 
 };
 
-export type CategoryOption = {
+export type categoryOption = {
   label: string;
   value: number;
 };
 
+export type categoryFormProps ={
+  formValues:createCategoryRequestBody;
+  formErrors:FormErrorsCategoryType;
+  isSubmit:boolean;
+  handleChange:(e: React.ChangeEvent<HTMLInputElement>)=> void;
+  handleSubmit:(e: React.FormEvent<HTMLFormElement>)=> void;
+  onReset?:() => void;
+  onDelete?:() => void;
+  mode: "new"|"edit";
+}
+
+export type postFormProps ={
+  formValues:createPostRequestBody;
+  formErrors:FormErrorsPostsType  ;
+  selectOptions:categoryOption[];
+  isSubmit:boolean;
+  handleChange:(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>)=> void;
+  handleSubmit:(e: React.FormEvent<HTMLFormElement>)=> void;
+  onReset?:() => void;
+  onDelete?:() => void;
+  setFormValues: (v: any) => void;
+  mode: "new"|"edit";
+}
+
+export type categoriesType = { id: number; name: string };

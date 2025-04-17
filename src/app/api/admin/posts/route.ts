@@ -1,16 +1,9 @@
+import { createPostRequestBody } from "@/app/_types/AdminType";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient()
 
-
-// 記事作成のリクエストボディの型
-interface CreatePostRequestBody {
-  title: string
-  content: string
-  categories: { id: number }[]
-  thumbnailUrl: string
-}
 
 export const GET = async (request: NextRequest) => {
 
@@ -51,7 +44,7 @@ export const POST = async (request: NextRequest, context: any) => {
     const body = await request.json()
     console.log("受け取ったデータ:", body)
     // bodyの中からtitle, content, categories, thumbnailUrlを取り出す
-    const { title, content, categories, thumbnailUrl }: CreatePostRequestBody = body
+    const { title, content, categories, thumbnailUrl }: createPostRequestBody = body
 
     // 投稿をDBに生成
     const data = await prisma.post.create({

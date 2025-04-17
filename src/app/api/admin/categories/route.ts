@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { createCategoryRequestBody } from "@/app/_types/AdminType";
 
 const prisma = new PrismaClient()
 
-interface CreateCategoryRequestBody{
-  name: string
-}
 
 export const GET = async (request: NextRequest) => {
   try{
@@ -29,7 +27,7 @@ export const POST = async (request: NextRequest, category: any) => {
     const body = await request.json()
     console.log("受け取ったデータ:", body)
     //bodyの中からnameを取り出す
-    const { name }: CreateCategoryRequestBody = body
+    const { name }: createCategoryRequestBody = body
 
     //カテゴリーをDBに生成
     const data = await prisma.category.create({

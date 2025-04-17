@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { API_BASE_URL } from '../../_Constants';
-import { ShowPost,ShowPostResponse } from '../../_types/PostsType';
+import { showPost,showPostResponse } from '../../_types/PostsType';
 
 
 
@@ -13,7 +13,7 @@ import { ShowPost,ShowPostResponse } from '../../_types/PostsType';
 
 const Show: React.FC = () => {
   const { id } = useParams()
-  const [post, setPost] = useState<ShowPost | null>(null)
+  const [post, setPost] = useState<showPost | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
 
 
@@ -22,10 +22,10 @@ const Show: React.FC = () => {
     const fetcher = async () => {
       setLoading(true)
       //fetchの後ろに管理画面から取得したエンドポイントを入力
-      const res = await fetch(`/api/admin/posts/${id}`, {
+      const res = await fetch(`/api/posts/${id}`, {
       });
 
-      const json = (await res.json()) as ShowPostResponse;
+      const json = (await res.json()) as showPostResponse;
       console.log(json)
       setPost(json.post);
       setLoading(false)

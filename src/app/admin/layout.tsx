@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
-import { Sidebar } from "@/app/_components/Admin_Sidebar";
+import { Sidebar } from "@/app/admin/_components/Admin_Sidebar";
 
 
 

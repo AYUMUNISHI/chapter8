@@ -3,13 +3,13 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/_Constants";
-import {ShowPost, Posts} from './_types/PostsType';
+import {showPost, } from './_types/PostsType';
 import { headers } from "next/headers";
 
 
 export default function Home(){
 
-  const [posts, setPosts] = useState<ShowPost[]>([])
+  const [posts, setPosts] = useState<showPost[]>([])
   const [loading, setLoading] =useState<boolean>(false)
 
   useEffect(() => {
@@ -17,14 +17,14 @@ export default function Home(){
       setLoading(true);
       try {
         //fetchの後ろに管理画面から取得したエンドポイントを入力
-        const res = await fetch(`/api/admin/posts`,{
+        const res = await fetch(`/api/posts`,{
 
        });
 
         if (!res.ok) {
           throw new Error('ネットワークエラー');
         }
-        const data = await res.json() as Posts; // 型を指定
+        const data = await res.json() ; 
         setPosts(data.posts); // APIから取得したデータを使用
       } catch (error) {
         console.error('データの取得に失敗しました:', error);

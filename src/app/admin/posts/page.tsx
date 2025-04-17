@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/_Constants";
 import Link from "next/link";
-import { Posts, CreatePostRequestBody } from "@/app/_types/AdminType";
+import { Posts, createPostRequestBody } from "@/app/_types/AdminType";
 
 
 
 export default function AdminHome() {
 
-  const [posts, setPosts] = useState<CreatePostRequestBody[]>([]);
+  const [posts, setPosts] = useState<createPostRequestBody[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
