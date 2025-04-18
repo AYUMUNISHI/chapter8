@@ -3,6 +3,7 @@
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { categoryOption, postFormProps } from '@/app/_types/AdminType';
+import { postsValidate } from './Validate';
 
 
 const PostForm: React.FC<postFormProps> = ({
@@ -11,14 +12,78 @@ const PostForm: React.FC<postFormProps> = ({
   selectOptions,
   isSubmit,
   handleChange,
-  handleSubmit,
+  setIsSubmit,
   onReset,
   onDelete,
   setFormValues,
+  setFormErrors,
   mode,
+  id,
 }) => {
   const isNew = mode === "new";
   const animatedComponents = makeAnimated();
+
+
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmit(true);
+    console.log("🚀 handleSubmit called");
+
+    const errors = postsValidate(formValues);
+    setFormErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      setIsSubmit(false); // ✅ バリデーションNG時にも解除
+      return;
+    }
+    const url = isNew ? `/api/admin/posts` : `/api/admin/posts/${id}`;
+    const method = isNew ? 'POST' : 'PUT';
+    // 🔽 thumbnailが空なら自動で "http://placehold.jp/800×400.png" にする
+    const finalThumbnail = formValues.thumbnailUrl || "http://placehold.jp/800×400.png";
+
+    console.log("✅ バリデーション通過しました");
+
+    const options = {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formValues.title,
+        content: formValues.content,
+        thumbnailUrl: finalThumbnail,
+        categories: formValues.categories.map(c => ({ id: c.id }))
+      }),
+    };
+
+
+    try {
+      const response = await fetch(url, options);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("fetch error:", errorText);
+        throw new Error("更新に失敗しました。");
+      }
+
+      const data = await response.json();
+      alert(isNew ? "送信が完了しました" :"更新が完了しました。");
+      if(isNew && onReset) onReset();
+
+      window.location.href = "/admin/posts";
+      return data;
+
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        alert(e.message || "エラーが発生しました。");
+      } else {
+        alert("エラーが発生しました。");
+      }
+      return e;
+
+    } finally {
+      setIsSubmit(false); // ✅ 成功でも失敗でも解除
+    }
+  };
 
   return (
 

@@ -3,12 +3,9 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { postsValidate } from '@/app/admin/_components/Validate';
 import { usePostForm } from '@/app/_hooks/usePostForm';
-import { postsCategory } from '@/app/admin/_components/PostsCategory';
-import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { categoryOption, createPostRequestBody } from '@/app/_types/AdminType';
+import { categoryOption} from '@/app/_types/AdminType';
 import { convertToOptions } from '../../_components/ConvertToOptions';
 import PostForm from '../../_components/PostForm';
 
@@ -19,7 +16,8 @@ import PostForm from '../../_components/PostForm';
 
 
 const PostEdit: React.FC = () => {
-  const { id } = useParams();
+  const { id: rawId } = useParams();
+  const id = Array.isArray(rawId) ? rawId[0] : rawId; // ← ここで型解決
   const initialFormState = { id: "", title: "", content: "", thumbnailUrl: "http://placehold.jp/800×400.png", createdAt: "", categories: [], };
   const { formValues, setFormValues, formErrors, setFormErrors, handleChange } = usePostForm(initialFormState);
   const [categoryList, setCategoryList] = useState<{ id: number; name: string }[]>([]);
@@ -27,19 +25,7 @@ const PostEdit: React.FC = () => {
   const [isSubmit, setIsSubmit] = useState<boolean>(true);
   const animatedComponents = makeAnimated();
 
-  // 🔽 thumbnailが空なら自動で "http://placehold.jp/800×400.png" にする
-  const finalThumbnail = formValues.thumbnailUrl || "http://placehold.jp/800×400.png";
 
-  const options = {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title: formValues.title,
-      content: formValues.content,
-      thumbnailUrl: finalThumbnail,
-      categories: formValues.categories.map(c => ({ id: c.id }))
-    }),
-  };
 
 
   useEffect(() => {
@@ -58,7 +44,7 @@ const PostEdit: React.FC = () => {
 
 
         setFormValues({
-          id:data.post.id,
+          id: data.post.id,
           title: data.post.title,
           content: data.post.content,
           thumbnailUrl: data.post.thumbnailUrl,
@@ -66,7 +52,7 @@ const PostEdit: React.FC = () => {
           createdAt: data.post.createdAt,
         });
 
-        
+
         setCategoryList(catData.categories);
       } catch (error) {
         console.error("データ取得エラー：", error);
@@ -79,47 +65,6 @@ const PostEdit: React.FC = () => {
 
 
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmit(true);
-    console.log("🚀 handleSubmit called");
-  
-    const errors = postsValidate(formValues);
-    setFormErrors(errors);
-  
-    if (Object.keys(errors).length > 0) {
-      setIsSubmit(false); // ✅ バリデーションNG時にも解除
-      return;
-    }
-  
-    console.log("✅ バリデーション通過しました");
-  
-    try {
-      const response = await fetch(`/api/admin/posts/${id}`, options);
-  
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("fetch error:", errorText);
-        throw new Error("更新に失敗しました。");
-      }
-  
-      const data = await response.json();
-      alert("更新が完了しました。");
-      window.location.href = "/admin/posts";
-      return data;
-  
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        alert(e.message || "エラーが発生しました。");
-      } else {
-        alert("エラーが発生しました。");
-      }
-      return e;
-  
-    } finally {
-      setIsSubmit(false); // ✅ 成功でも失敗でも解除
-    }
-  };
 
 
   const handleDelete = async () => {
@@ -147,7 +92,7 @@ const PostEdit: React.FC = () => {
       } else {
         alert("エラーが発生しました。");
       }
-    }finally{
+    } finally {
       setIsSubmit(false);
     }
   }
@@ -171,18 +116,20 @@ const PostEdit: React.FC = () => {
 
   return (
     <>
-        <PostForm
+      <PostForm
         formValues={formValues}
         formErrors={formErrors}
         selectOptions={selectOptions}
         isSubmit={isSubmit}
         handleChange={handleChange}
-        handleSubmit={handleSubmit}
         onDelete={handleDelete}
         setFormValues={setFormValues}
+        setFormErrors={setFormErrors}
+        setIsSubmit={setIsSubmit}
         mode="edit"
+        id={id}
       />
-          </>
+    </>
   )
 }
 

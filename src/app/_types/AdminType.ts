@@ -59,11 +59,13 @@ export type postFormProps ={
   selectOptions:categoryOption[];
   isSubmit:boolean;
   handleChange:(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>)=> void;
-  handleSubmit:(e: React.FormEvent<HTMLFormElement>)=> void;
   onReset?:() => void;
   onDelete?:() => void;
   setFormValues: (v: any) => void;
+  setIsSubmit: (isSubmit: boolean) => void;
+  setFormErrors: (errors: FormErrorsPostsType) => void;
   mode: "new"|"edit";
+  id?: string | number; // オプションでOK
 }
 
 export type categoriesType = { id: number; name: string };
