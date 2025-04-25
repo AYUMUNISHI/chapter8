@@ -71,7 +71,7 @@ const Contact= () =>{
           alert("エラーが発生しました。");
         }
         return e;
-    }
+      }
 
     }
   };

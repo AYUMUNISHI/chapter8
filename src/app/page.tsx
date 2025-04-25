@@ -3,23 +3,28 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/_Constants";
-import {Posts,Post} from './_types/PostsType';
+import {showPost, } from './_types/PostsType';
+import { headers } from "next/headers";
 
 
 export default function Home(){
 
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<showPost[]>([])
   const [loading, setLoading] =useState<boolean>(false)
 
   useEffect(() => {
     const fetcher = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/posts`);
-        if (!response.ok) {
+        //fetchの後ろに管理画面から取得したエンドポイントを入力
+        const res = await fetch(`/api/posts`,{
+
+       });
+
+        if (!res.ok) {
           throw new Error('ネットワークエラー');
         }
-        const data = await response.json() as Posts; // 型を指定
+        const data = await res.json() ; 
         setPosts(data.posts); // APIから取得したデータを使用
       } catch (error) {
         console.error('データの取得に失敗しました:', error);
@@ -60,13 +65,13 @@ export default function Home(){
                     className="flex justify-between gap-2 text-category text-sm"
                   >
                     {
-                      post.categories.map((category:string) => {
+                      post.postCategories?.map((pc) => {
                         return (
                           <div
-                            key={category}
+                            key={pc.category.name}
                             className="border border-category rounded px-1 py-0.5 "
                           >
-                            {category}
+                            {pc.category.name}
                           </div>
                         )
                       })

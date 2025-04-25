@@ -12,12 +12,21 @@ export const Header: React.FC = () => {
       >
         Blog
       </Link>
-      <Link
-        href="/contact"
-        className="header-link hover:text-purple-300"
-      >
-        お問い合わせ
-      </Link>
+      <div className=''>
+        <Link
+          href="/contact"
+          className="header-link hover:text-purple-300"
+        >
+          お問い合わせ
+        </Link>
+        <Link
+          href="/admin/posts"
+          className="header-link hover:text-purple-300 ml-8"
+        >
+          記事登録
+        </Link>
+
+      </div>
     </header>
   )
 }
