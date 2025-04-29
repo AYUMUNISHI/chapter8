@@ -49,7 +49,7 @@ const Show: React.FC = () => {
         <div className="w-full h-[60%]">
           {post && (
             <Image
-              src={post.thumbnailUrl || "http://placehold.jp/800×400.png"}
+              src={post.thumbnailImageKey || "http://placehold.jp/800×400.png"}
               alt={post.title}
               className="object-cover h-full w-full "
               width={1000} height={280}

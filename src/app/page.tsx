@@ -12,6 +12,8 @@ export default function Home(){
   const [posts, setPosts] = useState<showPost[]>([])
   const [loading, setLoading] =useState<boolean>(false)
 
+  
+
   useEffect(() => {
     const fetcher = async () => {
       setLoading(true);
@@ -25,6 +27,7 @@ export default function Home(){
           throw new Error('ネットワークエラー');
         }
         const data = await res.json() ; 
+        console.log('APIから取得したデータ:', data);
         setPosts(data.posts); // APIから取得したデータを使用
       } catch (error) {
         console.error('データの取得に失敗しました:', error);

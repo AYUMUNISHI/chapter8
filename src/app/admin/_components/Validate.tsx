@@ -13,12 +13,12 @@ export const postsValidate = (values: FormErrorsPostsType) => {
   if (!values.content) {
     errors.content = "内容は必須です。";
   }
-  if (!values.thumbnailUrl) {
-    errors.thumbnailUrl = "サムネイル画像URLは必須です。";
+  if (!values.thumbnailImageKey) {
+    errors.thumbnailImageKey = "サムネイル画像URLは必須です。";
   } else if (
-    !/^https?:\/\/.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(values.thumbnailUrl)
+    !/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(values.thumbnailImageKey)
   ) {
-    errors.thumbnailUrl = "有効な画像URLを入力してください。(.jpg/.pngなど)";
+    errors.thumbnailImageKey = "有効な画像URLを入力してください。(.jpg/.pngなど)";
   }
   return errors;
 }

@@ -8,6 +8,7 @@ import makeAnimated from 'react-select/animated';
 import { categoryOption} from '@/app/_types/AdminType';
 import { convertToOptions } from '../../_components/ConvertToOptions';
 import PostForm from '../../_components/PostForm';
+import { useSupabaseSession } from '@/app/_hooks/useSupabaseSession';
 
 
 
@@ -18,20 +19,28 @@ import PostForm from '../../_components/PostForm';
 const PostEdit: React.FC = () => {
   const { id: rawId } = useParams();
   const id = Array.isArray(rawId) ? rawId[0] : rawId; // ← ここで型解決
-  const initialFormState = { id: "", title: "", content: "", thumbnailUrl: "http://placehold.jp/800×400.png", createdAt: "", categories: [], };
+  const initialFormState = { id: "", title: "", content: "", thumbnailImageKey: "http://placehold.jp/800×400.png", createdAt: "", categories: [], };
   const { formValues, setFormValues, formErrors, setFormErrors, handleChange } = usePostForm(initialFormState);
   const [categoryList, setCategoryList] = useState<{ id: number; name: string }[]>([]);
   const [selectOptions, setSelectOptions] = useState<categoryOption[]>([]);
   const [isSubmit, setIsSubmit] = useState<boolean>(true);
   const animatedComponents = makeAnimated();
+  const { token } = useSupabaseSession();
 
 
 
 
   useEffect(() => {
+    if(!token) return;
     const fetcherData = async () => {
       try {
-        const response = await fetch(`/api/admin/posts/${id}`);
+        const response = await fetch(`/api/admin/posts/${id}`,{
+          headers:{
+            Authorization:token,
+          }
+        },
+
+        );
         const data = await response.json();
         console.log("📦 APIからの実データ:", data); // ←これで確認！
         //投稿データ
@@ -47,7 +56,7 @@ const PostEdit: React.FC = () => {
           id: data.post.id,
           title: data.post.title,
           content: data.post.content,
-          thumbnailUrl: data.post.thumbnailUrl,
+          thumbnailImageKey: data.post.thumbnailImageKey,
           categories: selectedCategoryIds.map((id: number) => ({ id })),
           createdAt: data.post.createdAt,
         });
@@ -61,13 +70,14 @@ const PostEdit: React.FC = () => {
       }
     };
     fetcherData()
-  }, [id])
+  }, [id,token])
 
 
 
 
 
   const handleDelete = async () => {
+    if(!token) return;
     const confirmDelete = confirm("本当に削除してよろしいですか？");
     if (!confirmDelete) return;
     setIsSubmit(true);
@@ -75,6 +85,9 @@ const PostEdit: React.FC = () => {
     try {
       const response = await fetch(`/api/admin/posts/${id}`, {
         method: "DELETE",
+        headers:{
+          Authorization:token,
+        },
       });
 
       if (!response.ok) {
@@ -98,9 +111,14 @@ const PostEdit: React.FC = () => {
   }
 
   useEffect(() => {
+    if(!token)return;
     const fetchCategories = async () => {
       try {
-        const catRes = await fetch(`/api/admin/categories`);
+        const catRes = await fetch(`/api/admin/categories`,{
+          headers:{
+            Authorization:token,
+          }
+        });
         const catData = await catRes.json();
         setCategoryList(catData.categories);
         setSelectOptions(convertToOptions(catData.categories));
@@ -109,7 +127,7 @@ const PostEdit: React.FC = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [token]);
 
 
 

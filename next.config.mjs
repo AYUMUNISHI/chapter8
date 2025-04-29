@@ -13,15 +13,9 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.microcms-assets.io'
       },
-      {
-        protocol: 'https',
-        hostname: 'with-the-dog.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'i.gyazo.com',
-      }
-    ]
+
+    ],
+    domains: ['hzokaprypkbeexsdrjle.supabase.co'],
   }
 };
 

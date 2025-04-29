@@ -2,9 +2,12 @@
 
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { categoryOption, postFormProps } from '@/app/_types/AdminType';
+import {  categoryOption, createPostRequestBody, postFormProps } from '@/app/_types/AdminType';
 import { postsValidate } from './Validate';
-
+import { supabase } from '@/utils/supabase';
+import { v4 as uuidv4 } from 'uuid'  // 固有IDを生成するライブラリ
+import { useEffect, useState } from 'react';
+import { useSupabaseSession } from '@/app/_hooks/useSupabaseSession';
 
 const PostForm: React.FC<postFormProps> = ({
   formValues,
@@ -22,13 +25,75 @@ const PostForm: React.FC<postFormProps> = ({
 }) => {
   const isNew = mode === "new";
   const animatedComponents = makeAnimated();
+  const [thumbnailImageKey, setThumbnailImageKey] = useState('')
+  const [thumbnailImageUrl, setThumbnailImageUrl] = useState<null | string>(null)
+  const { token } = useSupabaseSession();
 
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    if (!event.target.files || event.target.files.length == 0) {
+      // 画像が選択されていないのでreturn
+      return
+    }
 
+    const file = event.target.files[0] // 選択された画像を取得
+    const ext = file.name.split('.').pop(); // ファイル名から拡張子を取得
+    const filePath = `private/${uuidv4()}.${ext}` // ファイルパスを指定
+
+    // Supabaseに画像をアップロード
+    const { data, error } = await supabase.storage
+      .from('post-thumbnail') // ここでバケット名を指定
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      })
+
+    // アップロードに失敗したらエラーを表示して終了
+    if (error) {
+      alert(error.message)
+      return
+    }
+
+    if (data?.path) {
+      const { data: publicUrlData } = await supabase.storage
+        .from('post-thumbnail')
+        .getPublicUrl(data.path);
+  
+      setThumbnailImageKey(data.path);
+      setThumbnailImageUrl(publicUrlData.publicUrl || '');
+  
+      // 📌 フォームに保存するのは「https://〜」の公開URL！
+      setFormValues((prev:createPostRequestBody) => ({
+        ...prev,
+        thumbnailImageKey: publicUrlData.publicUrl || '',
+      }));
+    }
+  }
+
+  useEffect(() =>{
+    if(!thumbnailImageKey) return;
+    if(!token) return;
+    //アップロード時に取得した、thumbnailImageKeyを用いて画像のURLを取得
+    const fetcher = async() =>{
+      const {
+        data: {publicUrl},
+      } = await supabase.storage
+      .from('post-thumbnail')
+      .getPublicUrl(thumbnailImageKey)
+
+      setThumbnailImageUrl(publicUrl)
+    }
+
+    fetcher()
+  },[thumbnailImageKey])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmit(true);
     console.log("🚀 handleSubmit called");
+    console.log("🚀 token:", token); // ←ここ
+    console.log("🚀 Authorizationヘッダー:", `Bearer ${token}`); // ←ここ
 
     const errors = postsValidate(formValues);
     setFormErrors(errors);
@@ -40,17 +105,20 @@ const PostForm: React.FC<postFormProps> = ({
     const url = isNew ? `/api/admin/posts` : `/api/admin/posts/${id}`;
     const method = isNew ? 'POST' : 'PUT';
     // 🔽 thumbnailが空なら自動で "http://placehold.jp/800×400.png" にする
-    const finalThumbnail = formValues.thumbnailUrl || "http://placehold.jp/800×400.png";
+    const finalThumbnail = formValues.thumbnailImageKey || "http://placehold.jp/800×400.png";
 
     console.log("✅ バリデーション通過しました");
 
     const options = {
       method,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization:`Bearer ${token}`,
+      },
       body: JSON.stringify({
         title: formValues.title,
         content: formValues.content,
-        thumbnailUrl: finalThumbnail,
+        thumbnailImageKey: finalThumbnail,
         categories: formValues.categories.map(c => ({ id: c.id }))
       }),
     };
@@ -122,21 +190,31 @@ const PostForm: React.FC<postFormProps> = ({
               />
               <p className="text-red-700 text-xs mb-10">{formErrors.content}</p>
             </label>
-            <label htmlFor="thumbnailUrl">
+            <label htmlFor="thumbnailImageKey">
               <p className=" text-lg ">サムネイルURL</p>
               <input
-                type="text"
-                id='thumbnailUrl'
-                name='thumbnailUrl'
+                type="file"
+                id='thumbnailImageKey'
+                name='thumbnailImageKey'
                 placeholder="http://placehold.jp/800×400.png"
                 className='border border-gray-300 rounded-lg p-4 w-full '
-                value={formValues.thumbnailUrl}
-                onChange={handleChange}
+                onChange={handleImageChange}
+                accept='image/*'
                 disabled={isSubmit}
               />
-              <p className="text-red-700 text-xs mb-10">{formErrors.thumbnailUrl}</p>
+              <p className="text-red-700 text-xs mb-10">{formErrors.thumbnailImageKey}</p>
 
             </label>
+            {thumbnailImageUrl &&(
+              <div className='mt-2'>
+                <img 
+                  src= {thumbnailImageUrl}
+                  alt="thumbnail preview"
+                  width={400}
+                  height={400}
+                  />
+              </div>
+            )}
             <label htmlFor="category">
               <p className=" text-lg ">カテゴリー</p>
               <Select< categoryOption, true>

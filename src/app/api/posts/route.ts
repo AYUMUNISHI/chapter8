@@ -5,6 +5,7 @@ const prisma = new PrismaClient()
 
 //GETという命名をすることで、GETリクエストの時にこの関数が呼ばれる
 export const GET = async (request: NextRequest) =>{
+  
   try{
     //Postの一覧をDBから取得
     const posts = await prisma.post.findMany({

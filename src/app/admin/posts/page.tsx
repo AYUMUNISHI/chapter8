@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/_Constants";
 import Link from "next/link";
 import { Posts, createPostRequestBody } from "@/app/_types/AdminType";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
 
 
@@ -12,7 +13,11 @@ export default function AdminHome() {
   const [posts, setPosts] = useState<createPostRequestBody[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const {token} = useSupabaseSession();
+
   useEffect(() => {
+    if(!token ) return;
+
     const fetcher = async () => {
       setLoading(true);
       try {
@@ -20,8 +25,9 @@ export default function AdminHome() {
         const response = await fetch(`/api/admin/posts`, {
           //fetch関数の第二引数にheadersを設定でき、その中にAPIキーを設定します
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (!response.ok) {
@@ -37,7 +43,7 @@ export default function AdminHome() {
       }
     };
     fetcher();
-  }, []);
+  }, [token]);
 
 
 

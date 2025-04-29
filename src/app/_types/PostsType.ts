@@ -2,7 +2,7 @@ export type showPost = {
   id: number;
   title: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   createdAt: string;
   postCategories: {
     category: {
