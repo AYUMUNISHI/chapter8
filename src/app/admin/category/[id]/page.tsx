@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { categoryValidate } from '@/app/admin/_components/Validate';
 import { useCategoryForm } from '@/app/_hooks/useCategoryForm';
 import { CategoryForm } from '../../_components/CategoryForm';
+import { useSupabaseSession } from '@/app/_hooks/useSupabaseSession';
 
 
 
@@ -17,11 +18,16 @@ const CategoryEdit: React.FC = () => {
   const initialFormState = { name: "", };
   const { formValues, setFormValues, formErrors, setFormErrors, handleChange } = useCategoryForm(initialFormState);
   const [isSubmit, setIsSubmit] = useState(true);
+  const { token } = useSupabaseSession();
 
 
   const options = {
     method: "PUT",
-    headers: { "Content-type": "application/json" },
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+
+    },
     body: JSON.stringify({
       name: formValues.name,
     }),
@@ -30,9 +36,14 @@ const CategoryEdit: React.FC = () => {
 
 
   useEffect(() => {
+    if (!token) return;
     const fetcherData = async () => {
       try {
-        const response = await fetch(`/api/admin/categories/${id}`);
+        const response = await fetch(`/api/admin/categories/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
         const data = await response.json();
         console.log("📦 APIからの実データ:", data);
 
@@ -46,7 +57,7 @@ const CategoryEdit: React.FC = () => {
       }
     };
     fetcherData()
-  }, [id])
+  }, [id, token])
 
 
 
@@ -54,6 +65,7 @@ const CategoryEdit: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!token) return;
     console.log("🚀 handleSubmit called");
     setIsSubmit(true);
 
@@ -94,11 +106,15 @@ const CategoryEdit: React.FC = () => {
   const handleDelete = async () => {
     const confirmDelete = confirm("本当に削除してよろしいですか？");
     if (!confirmDelete) return;
+    if (!token) return;
     setIsSubmit(true);
 
     try {
       const response = await fetch(`/api/admin/categories/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization:`Bearer ${token}`,
+        }
       });
 
       if (!response.ok) {
@@ -118,7 +134,7 @@ const CategoryEdit: React.FC = () => {
       } else {
         alert("エラーが発生しました。");
       }
-    }finally{
+    } finally {
       setIsSubmit(false);
     }
   }

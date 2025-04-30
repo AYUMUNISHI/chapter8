@@ -1,11 +1,31 @@
 import { createPostRequestBody } from "@/app/_types/AdminType";
+import { supabase } from "@/utils/supabase";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { headers } from 'next/headers';
 
 const prisma = new PrismaClient()
 
 
 export const GET = async (request: NextRequest) => {
+
+  const headersList = headers();
+  const authorization = headersList.get('authorization'); // 小文字！
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return NextResponse.json({ status: 'This endpoint requires a Bearer token' }, { status: 400 });
+  }
+
+  const token = authorization.split(' ')[1];
+
+  //supabaseに対してtokenを送る
+  const { error } = await supabase.auth.getUser(token);
+
+  // 送ったtokenが正しくない場合、errorが返却されるので、クライアントにもエラーを返す
+  if(error) 
+  return NextResponse.json({ status: error.message }, { status: 400 })
+  // tokenが正しい場合、以降が実行される
+
 
   try {
     const posts = await prisma.post.findMany({
@@ -39,19 +59,35 @@ export const GET = async (request: NextRequest) => {
 // POSTという命名にすることで、POSTリクエストの時にこの関数が呼ばれる
 export const POST = async (request: NextRequest, context: any) => {
   console.log("POSTリクエスト受信")
+  const headersList = headers();
+  const authorization = headersList.get('authorization'); // 小文字！
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return NextResponse.json({ status: 'This endpoint requires a Bearer token' }, { status: 400 });
+  }
+
+  const token = authorization.split(' ')[1];
+  //supabaseに対してtokenを送る
+  const { error } = await supabase.auth.getUser(token);
+
+  // 送ったtokenが正しくない場合、errorが返却されるので、クライアントにもエラーを返す
+  if(error) 
+  return NextResponse.json({ status: error.message }, { status: 400 })
+  // tokenが正しい場合、以降が実行される
+
   try {
     // リクエストのbodyを取得
     const body = await request.json()
     console.log("受け取ったデータ:", body)
-    // bodyの中からtitle, content, categories, thumbnailUrlを取り出す
-    const { title, content, categories, thumbnailUrl }: createPostRequestBody = body
+    // bodyの中からtitle, content, categories, thumbnailImageKeyを取り出す
+    const { title, content, categories, thumbnailImageKey }: createPostRequestBody = body
 
     // 投稿をDBに生成
     const data = await prisma.post.create({
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       },
     })
 

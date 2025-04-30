@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { categoryValidate } from '@/app/admin/_components/Validate';
 import { useCategoryForm } from '@/app/_hooks/useCategoryForm';
 import { CategoryForm } from '../../_components/CategoryForm';
+import { useSupabaseSession } from '@/app/_hooks/useSupabaseSession';
 
 
 
@@ -13,10 +14,14 @@ const CategoryNew: React.FC = () => {
   const initialFormState = { name: "", };
   const { formValues, setFormValues, formErrors, setFormErrors, handleChange } = useCategoryForm(initialFormState);
   const [isSubmit, setIsSubmit] = useState(false);
+  const {token} = useSupabaseSession();
 
   const options = {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json" ,
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({
       name: formValues.name,
     }),
@@ -31,6 +36,7 @@ const CategoryNew: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if(!token) return;
     console.log("🚀 handleSubmit called");
     setIsSubmit(true);
 

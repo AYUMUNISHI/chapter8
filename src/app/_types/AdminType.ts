@@ -6,7 +6,7 @@ export type createPostRequestBody = {
   content: string;
   createdAt: string;
   categories: { id: number }[];
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
 }
 
 export type createCategoryRequestBody = {
@@ -29,7 +29,7 @@ export type categoryType ={
 export type FormErrorsPostsType = {
   title?: string;
   content?: string;
-  thumbnailUrl?: string;
+  thumbnailImageKey?: string;
 };
 
 export type FormErrorsCategoryType = {

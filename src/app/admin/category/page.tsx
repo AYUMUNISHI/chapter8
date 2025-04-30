@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { categoryType, createCategoryRequestBody } from "@/app/_types/AdminType";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
 
 
@@ -10,15 +11,19 @@ export default function Category() {
 
   const [posts, setPosts] = useState<createCategoryRequestBody[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const { token } = useSupabaseSession();
 
   useEffect(() =>{
+    if ( !token ) return;
+
     const fetcher = async() =>{
       setLoading(true);
       try{
         //fetchのAPIから取得したデータを入力
         const response = await fetch(`/api/admin/categories`,{
           headers: {
-            'Create-Type': 'application/json'
+            'Create-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           }
         });
 
@@ -36,15 +41,9 @@ export default function Category() {
       }
     };
     fetcher();
-  },[]);
+  },[token]);
 
-  if (loading) {
-    return <div>読み込み中...</div>
-  }
 
-  if (!posts.length) {
-    return <div>記事がありません</div>
-  }
 
   return (
     <>
@@ -61,7 +60,11 @@ export default function Category() {
             </Link>
           </div>
           <div className="h-[70%] overflow-y-auto border rounded p-2">
-          {
+            { loading ? (
+              <div> 読み込み中...</div>
+            ) :!posts.length ?(
+              <div> 記事がありません</div>
+            ):
             posts.map((post) =>(
               <div 
                 key={post.id}
