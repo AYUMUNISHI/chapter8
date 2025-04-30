@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { headers } from "next/headers";
+import { supabase } from "@/utils/supabase";
 
 const prisma = new PrismaClient()
 
@@ -16,6 +18,25 @@ export const GET = async (
   request: NextRequest,
   { params }: { params: { id: string } }, // ここでリクエストパラメータを受け取る
 ) => {
+
+    const headersList = headers();
+    const authorization = headersList.get('authorization'); // 小文字！
+  
+    if (!authorization || !authorization.startsWith('Bearer ')) {
+      return NextResponse.json({ status: 'This endpoint requires a Bearer token' }, { status: 400 });
+    }
+  
+    const token = authorization.split(' ')[1];
+  
+    //supabaseに対してtokenを送る
+    const { error } = await supabase.auth.getUser(token);
+  
+    // 送ったtokenが正しくない場合、errorが返却されるので、クライアントにもエラーを返す
+    if(error) 
+    return NextResponse.json({ status: error.message }, { status: 400 })
+    // tokenが正しい場合、以降が実行される
+
+
   // paramsの中にidが入っているので、それを取り出す
   const { id } = params
 
@@ -54,6 +75,23 @@ export const PUT = async (
   request:NextRequest,
   { params }: { params: { id: string } }
 ) =>{
+  const headersList = headers();
+  const authorization = headersList.get('authorization'); // 小文字！
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return NextResponse.json({ status: 'This endpoint requires a Bearer token' }, { status: 400 });
+  }
+
+  const token = authorization.split(' ')[1];
+
+  //supabaseに対してtokenを送る
+  const { error } = await supabase.auth.getUser(token);
+
+  // 送ったtokenが正しくない場合、errorが返却されるので、クライアントにもエラーを返す
+  if(error) 
+  return NextResponse.json({ status: error.message }, { status: 400 })
+  // tokenが正しい場合、以降が実行される
+
    // paramsの中にidが入っているので、それを取り出す
   const { id } = params
 
@@ -105,6 +143,24 @@ export const DELETE = async (
   request: NextRequest,
   { params }: { params: { id: string } }, //ここでリクエストパラメータを受け取る
 ) =>{
+
+  const headersList = headers();
+  const authorization = headersList.get('authorization'); // 小文字！
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return NextResponse.json({ status: 'This endpoint requires a Bearer token' }, { status: 400 });
+  }
+
+  const token = authorization.split(' ')[1];
+
+  //supabaseに対してtokenを送る
+  const { error } = await supabase.auth.getUser(token);
+
+  // 送ったtokenが正しくない場合、errorが返却されるので、クライアントにもエラーを返す
+  if(error) 
+  return NextResponse.json({ status: error.message }, { status: 400 })
+  // tokenが正しい場合、以降が実行される
+  
 //paramsの中にidが入っているので、それを取り出す
   const { id } = params
 

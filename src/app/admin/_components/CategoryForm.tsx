@@ -2,6 +2,7 @@
 
 import React from "react";
 import { categoryFormProps } from "@/app/_types/AdminType";
+import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 
 
 export const CategoryForm: React.FC<categoryFormProps> = ({
@@ -15,6 +16,7 @@ export const CategoryForm: React.FC<categoryFormProps> = ({
   mode,
 }) => {
   const isNew = mode === "new";
+  const { token } = useSupabaseSession();
 
   return (
 

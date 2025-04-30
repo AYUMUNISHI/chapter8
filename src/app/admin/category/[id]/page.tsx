@@ -24,10 +24,10 @@ const CategoryEdit: React.FC = () => {
   const options = {
     method: "PUT",
     headers: {
-       "Content-type": "application/json",
-       Authorization:`Bearer ${token}`,
-      
-      },
+      "Content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+
+    },
     body: JSON.stringify({
       name: formValues.name,
     }),
@@ -39,9 +39,9 @@ const CategoryEdit: React.FC = () => {
     if (!token) return;
     const fetcherData = async () => {
       try {
-        const response = await fetch(`/api/admin/categories/${id}`,{
-          headers:{
-            Authorization: token,
+        const response = await fetch(`/api/admin/categories/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           }
         });
         const data = await response.json();
@@ -57,7 +57,7 @@ const CategoryEdit: React.FC = () => {
       }
     };
     fetcherData()
-  }, [id,token])
+  }, [id, token])
 
 
 
@@ -65,7 +65,7 @@ const CategoryEdit: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if(!token) return;
+    if (!token) return;
     console.log("🚀 handleSubmit called");
     setIsSubmit(true);
 
@@ -106,14 +106,14 @@ const CategoryEdit: React.FC = () => {
   const handleDelete = async () => {
     const confirmDelete = confirm("本当に削除してよろしいですか？");
     if (!confirmDelete) return;
-    if(!token) return;
+    if (!token) return;
     setIsSubmit(true);
 
     try {
       const response = await fetch(`/api/admin/categories/${id}`, {
         method: "DELETE",
-        headers:{
-          Authorization: token,
+        headers: {
+          Authorization:`Bearer ${token}`,
         }
       });
 
@@ -134,7 +134,7 @@ const CategoryEdit: React.FC = () => {
       } else {
         alert("エラーが発生しました。");
       }
-    }finally{
+    } finally {
       setIsSubmit(false);
     }
   }

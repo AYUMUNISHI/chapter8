@@ -36,7 +36,7 @@ const PostEdit: React.FC = () => {
       try {
         const response = await fetch(`/api/admin/posts/${id}`,{
           headers:{
-            Authorization:token,
+            Authorization:`Bearer ${token}`,
           }
         },
 
@@ -48,7 +48,11 @@ const PostEdit: React.FC = () => {
         const selectedCategoryIds = selectedCategories.map((cat: any) => cat.id);
 
         //全カテゴリー
-        const catRes = await fetch(`/api/admin/categories`);
+        const catRes = await fetch(`/api/admin/categories`,{
+          headers:{
+            Authorization:`Bearer ${token}`,
+          }
+        });
         const catData = await catRes.json();
 
 
@@ -86,7 +90,7 @@ const PostEdit: React.FC = () => {
       const response = await fetch(`/api/admin/posts/${id}`, {
         method: "DELETE",
         headers:{
-          Authorization:token,
+          Authorization:`Bearer ${token}`,
         },
       });
 
@@ -116,7 +120,7 @@ const PostEdit: React.FC = () => {
       try {
         const catRes = await fetch(`/api/admin/categories`,{
           headers:{
-            Authorization:token,
+            Authorization:`Bearer ${token}`,
           }
         });
         const catData = await catRes.json();

@@ -23,7 +23,7 @@ export default function Category() {
         const response = await fetch(`/api/admin/categories`,{
           headers: {
             'Create-Type': 'application/json',
-            Authorization: token,
+            Authorization: `Bearer ${token}`,
           }
         });
 
